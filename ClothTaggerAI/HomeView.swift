@@ -6,23 +6,23 @@
 //
 
 import SwiftUI
+import PhotosUI
 
-// Mock Data Model
 struct ClothingItem: Identifiable {
     let id = UUID()
-    let imageName: String
+    let uiImage: UIImage?
     var tag: String
 }
 
-// Mock Data
 let mockClothes: [ClothingItem] = [
-    ClothingItem(imageName: "tshirt.add.icon", tag: "Blue Shirt"),
-    ClothingItem(imageName: "tshirt.add.icon", tag: "Black Jeans"),
-    ClothingItem(imageName: "tshirt.add.icon", tag: "Winter Jacket"),
-    ClothingItem(imageName: "tshirt.add.icon", tag: "Running Shoes")
+    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
+    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
+    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
+    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt")
 ]
 
 struct HomeView: View {
+    @State private var photoPickerViewModel = PhotoPickerViewModel()
     @State private var clothes = mockClothes
     @State private var selectedItem: ClothingItem?
     @State private var showPopup = false
@@ -52,12 +52,16 @@ struct HomeView: View {
                 .navigationTitle("My Closet")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            // Navigate to Photo Selection Screen
-                        }) {
+                        PhotosPicker(selection: $photoPickerViewModel.imageSelection, matching: .images) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title)
                         }
+                    }
+                }
+                .onChange(of: photoPickerViewModel.selectedImage) { _, newImage in
+                    if let newImage {
+                        let newClothing = ClothingItem(uiImage: newImage, tag: "NewImage")
+                        clothes.append(newClothing)
                     }
                 }
             }

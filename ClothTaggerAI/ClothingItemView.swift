@@ -12,13 +12,16 @@ struct ClothingItemView: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Image(item.imageName)
+            Image(uiImage: item.uiImage ?? .tshirtAddIcon)
                 .resizable()
-                .scaledToFit()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 140, height: 140)
+                .clipped()
                 .cornerRadius(10)
 
             Text(item.tag)
         }
+        .frame(width: 140, height: 170)
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(12)
@@ -27,5 +30,5 @@ struct ClothingItemView: View {
 }
 
 #Preview {
-    ClothingItemView(item: ClothingItem(imageName: "tshirt.add.icon", tag: "Random"))
+    ClothingItemView(item: ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"))
 }

@@ -22,7 +22,7 @@ struct ClothingTagEditorView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 12) {
-                Image(clothingItem.imageName)
+                Image(uiImage: clothingItem.uiImage ?? .tshirtAddIcon)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 150, height: 150)
@@ -69,7 +69,7 @@ struct ClothingTagEditorView: View {
 
 #Preview {
     ClothingTagEditorView(
-        clothingItem: ClothingItem(imageName: "tshirt.add.icon", tag: "Sample Shirt"),
+        clothingItem: ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
         onDelete: {}
     )
 }
