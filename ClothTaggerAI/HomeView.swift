@@ -107,7 +107,6 @@ struct HomeView: View {
                 )
                 .opacity(showPopup ? 1 : 0)
                 .scaleEffect(showPopup ? 1 : 0.8)
-                .animation(.spring(response: 0.4, dampingFraction: 0.7), value: showPopup)
                 .allowsHitTesting(showPopup)
             }
         }

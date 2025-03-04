@@ -27,7 +27,6 @@ struct ClothingTagEditorView: View {
                     .fontWeight(.medium)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
-                    .textFieldStyle(PlainTextFieldStyle())
                     .focused($isEditing)
 
             }
