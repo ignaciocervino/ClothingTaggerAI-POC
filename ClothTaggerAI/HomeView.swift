@@ -89,11 +89,18 @@ struct HomeView: View {
     private var popupView: some View {
         Group {
             if showPopup, let selectedId = selectedItemId,
-               let selectedIndex = clothes.firstIndex(where: { $0.id == selectedId }) {
+               let selectedItem = clothes.first(where: { $0.id == selectedId }) {
                 ClothingTagEditorView(
-                    clothingItem: $clothes[selectedIndex],
+                    clothingItem: Binding(
+                        get: { selectedItem },
+                        set: { newValue in
+                            if let index = clothes.firstIndex(where: { $0.id == selectedId }) {
+                                clothes[index] = newValue
+                            }
+                        }
+                    ),
                     onDelete: {
-                        clothes.remove(at: selectedIndex)
+                        clothes.removeAll { $0.id == selectedId }
                         selectedItemId = nil
                         showPopup = false
                     }
