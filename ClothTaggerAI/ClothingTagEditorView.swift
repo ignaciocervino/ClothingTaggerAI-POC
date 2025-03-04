@@ -1,6 +1,6 @@
 //
 //  ClothingTagEditorView.swift
-//  ClothTaggerAI
+//  ClothingTaggerAI
 //
 //  Created by Ignacio Cervino on 03/03/2025.
 //
