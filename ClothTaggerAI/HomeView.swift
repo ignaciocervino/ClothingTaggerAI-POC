@@ -24,67 +24,84 @@ let mockClothes: [ClothingItem] = [
 struct HomeView: View {
     @State private var photoPickerViewModel = PhotoPickerViewModel()
     @State private var clothes = mockClothes
-    @State private var selectedItem: ClothingItem?
+    @State private var selectedItemId: UUID?
     @State private var showPopup = false
 
     var body: some View {
         ZStack {
-            NavigationStack {
-                VStack {
-                    if clothes.isEmpty {
-                        Text("No clothes added yet.")
-                            .foregroundColor(.gray)
-                    } else {
-                        ScrollView {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))], spacing: 16) {
-                                ForEach(clothes.indices, id: \.self) { index in
-                                    ClothingItemView(item: clothes[index])
-                                        .onTapGesture {
-                                            selectedItem = clothes[index]
-                                            showPopup = true
-                                        }
-                                }
-                            }
-                            .padding()
-                        }
-                    }
+            mainContentView
+            backgroundOverlay
+            popupView
+        }
+    }
+
+    private var mainContentView: some View {
+        NavigationStack {
+            VStack {
+                if clothes.isEmpty {
+                    Text("No clothes added yet.")
+                        .foregroundColor(.gray)
+                } else {
+                    clothesGridView
                 }
-                .navigationTitle("My Closet")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        PhotosPicker(selection: $photoPickerViewModel.imageSelection, matching: .images) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title)
-                        }
-                    }
-                }
-                .onChange(of: photoPickerViewModel.selectedImage) { _, newImage in
-                    if let newImage {
-                        let newClothing = ClothingItem(uiImage: newImage, tag: "NewImage")
-                        clothes.append(newClothing)
+            }
+            .navigationTitle("My Closet")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    PhotosPicker(selection: $photoPickerViewModel.imageSelection, matching: .images) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title)
                     }
                 }
             }
-
-            if showPopup {
-                Color.black.opacity(0.8)
-                    .edgesIgnoringSafeArea(.all)
-                    .onTapGesture {
-                        showPopup = false
-                    }
-                    .zIndex(1)
+            .onChange(of: photoPickerViewModel.selectedImage) { _, newImage in
+                if let newImage {
+                    let newClothing = ClothingItem(uiImage: newImage, tag: "NewImage")
+                    clothes.append(newClothing)
+                }
             }
+        }
+    }
 
-            if showPopup, let selectedItem = selectedItem {
+    private var clothesGridView: some View {
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))], spacing: 16) {
+                ForEach(clothes) { item in
+                    ClothingItemView(item: item)
+                        .onTapGesture {
+                            selectedItemId = item.id
+                            showPopup = true
+                        }
+                }
+            }
+            .padding()
+        }
+    }
+
+    private var backgroundOverlay: some View {
+        Color.black.opacity(showPopup ? 0.9 : 0)
+            .edgesIgnoringSafeArea(.all)
+            .onTapGesture { showPopup = false }
+            .animation(.easeInOut, value: showPopup)
+            .allowsHitTesting(showPopup)
+    }
+
+    private var popupView: some View {
+        Group {
+            if showPopup, let selectedId = selectedItemId,
+               let selectedIndex = clothes.firstIndex(where: { $0.id == selectedId }) {
                 ClothingTagEditorView(
-                    clothingItem: selectedItem,
+                    clothingItem: $clothes[selectedIndex],
                     onDelete: {
-                        clothes.removeAll { $0.id == selectedItem.id }
+                        clothes.remove(at: selectedIndex)
+                        selectedItemId = nil
                         showPopup = false
                     }
                 )
-                .transition(.scale)
-                .zIndex(2)
+                .opacity(showPopup ? 1 : 0)
+                .scaleEffect(showPopup ? 1 : 0.8)
+                .animation(.spring(response: 0.4, dampingFraction: 0.7), value: showPopup)
+                .allowsHitTesting(showPopup)
             }
         }
     }

@@ -8,16 +8,9 @@
 import SwiftUI
 
 struct ClothingTagEditorView: View {
-    let clothingItem: ClothingItem
+    @Binding var clothingItem: ClothingItem
+    @FocusState private var isEditing: Bool
     var onDelete: () -> Void
-    @State private var editedTag: String
-    @State private var isEditing = false
-
-    init(clothingItem: ClothingItem, onDelete: @escaping () -> Void) {
-        self.clothingItem = clothingItem
-        self.onDelete = onDelete
-        self._editedTag = State(initialValue: clothingItem.tag)
-    }
 
     var body: some View {
         ZStack {
@@ -27,28 +20,25 @@ struct ClothingTagEditorView: View {
                     .scaledToFit()
                     .frame(width: 150, height: 150)
                     .cornerRadius(12)
+                    .shadow(radius: 4)
 
-                HStack {
-                    if isEditing {
-                        TextField("", text: $editedTag)
-                    } else {
-                        Text(editedTag)
-                            .font(.title2)
-                            .fontWeight(.medium)
-                    }
+                TextField("Item name", text: $clothingItem.tag)
+                    .font(.title2)
+                    .fontWeight(.medium)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .focused($isEditing)
 
-                    Button(action: { isEditing.toggle() }) {
-                        Image(systemName: isEditing ? "checkmark" : "pencil")
-                            .foregroundColor(.black)
-                    }
-                }
-                .padding(.horizontal)
             }
             .padding()
-            .frame(width: 250)
+            .frame(width: 260)
             .background(.thinMaterial)
             .cornerRadius(16)
             .shadow(radius: 5)
+            .onAppear {
+                isEditing = true
+            }
             .overlay(
                 Button(action: onDelete) {
                     Image(systemName: "trash.circle.fill")
@@ -69,7 +59,7 @@ struct ClothingTagEditorView: View {
 
 #Preview {
     ClothingTagEditorView(
-        clothingItem: ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
+        clothingItem: .constant(ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt")),
         onDelete: {}
     )
 }
