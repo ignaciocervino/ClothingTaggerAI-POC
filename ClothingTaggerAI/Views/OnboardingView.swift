@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct OnboardingView: View {
     @Environment(MLXModelLoader.self) var modelLoader
@@ -45,6 +46,7 @@ struct OnboardingView: View {
                             .foregroundColor(.green)
                             .onAppear {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    Logger.viewEvents.info("Onboarding completed")
                                     showOnboarding = false
                                 }
                             }
@@ -62,7 +64,7 @@ struct OnboardingView: View {
             do {
                 _ = try await modelLoader.load()
             } catch {
-                print("Error loading model: \(error)")
+                Logger.modelLoader.error("Error loading model: \(error)")
             }
         }
     }

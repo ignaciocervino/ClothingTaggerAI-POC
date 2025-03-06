@@ -14,10 +14,7 @@ protocol VLMServiceProtocol {
 }
 
 final class VLMService {
-    private let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.ClothingTaggerAI",
-        category: "MLXService"
-    )
+    private let logger = Logger.vlmService
     private let modelLoader: MLXModelLoader
 
     init(modelLoader: MLXModelLoader) {

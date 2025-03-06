@@ -21,11 +21,7 @@ final class MLXModelLoader {
         case loaded(ModelContainer)
     }
 
-    private let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.ClothingTaggerAI",
-        category: "MLXModelLoader"
-    )
-
+    private let logger = Logger.modelLoader
     var loadState: ModelLoadState = .idle
     var running = false
 

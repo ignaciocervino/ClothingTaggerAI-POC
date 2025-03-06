@@ -10,9 +10,7 @@ import OSLog
 import SwiftUI
 
 final class ImageAnalysis {
-    private let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.ClothingTaggerAI",
-        category: "ImageAnalysisService")
+    private let logger = Logger.imageAnalysis
 
     private let vlmService: VLMServiceProtocol
 

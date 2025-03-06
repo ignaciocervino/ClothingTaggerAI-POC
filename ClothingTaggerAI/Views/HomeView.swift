@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import OSLog
 
 struct ClothingItem: Identifiable {
     let id = UUID()
@@ -26,6 +27,7 @@ struct HomeView: View {
     @State private var clothes = mockClothes
     @State private var selectedItemId: UUID?
     @State private var showPopup = false
+    private let logger = Logger.viewEvents
 
     init() {
         _photoPickerViewModel = StateObject(
@@ -77,6 +79,7 @@ struct HomeView: View {
                     let newClothing = ClothingItem(uiImage: newImage, tag: detectedClothing ?? "Unknown")
 
                     DispatchQueue.main.async {
+                        logger.info("Appended \(newClothing.tag) to the list.")
                         clothes.append(newClothing)
                     }
                 }
@@ -121,6 +124,7 @@ struct HomeView: View {
                         }
                     ),
                     onDelete: {
+                        logger.info("Removing clothing item with id \(selectedId)")
                         clothes.removeAll { $0.id == selectedId }
                         selectedItemId = nil
                         showPopup = false

@@ -10,7 +10,6 @@ import PhotosUI
 import OSLog
 
 final class PhotoPickerViewModel: ObservableObject {
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.ClothingTaggerAI", category: "PhotoPickerViewModel")
     private let imageAnalyzer: ImageAnalysis
 
     var selectedImage: UIImage? = nil
@@ -40,7 +39,7 @@ final class PhotoPickerViewModel: ObservableObject {
                 await MainActor.run { self.selectedImage = uiImage }
             }
         } catch {
-            logger.error("❌ Failed to load image: \(error.localizedDescription)")
+            Logger.photoProcessing.error("❌ Failed to load image: \(error.localizedDescription)")
         }
 
         isProcessing = false
