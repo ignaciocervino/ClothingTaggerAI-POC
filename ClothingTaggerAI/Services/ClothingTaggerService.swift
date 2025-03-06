@@ -14,9 +14,10 @@ final class ClothingTaggerService {
 
     private let vlmService: VLMServiceProtocol
     let prompt = """
-        1. Check if the image contains a clothing item.
-        2. If yes, return the clothing type in at most 3 words.
-        3. If not, return 'nil'.
+        You are a strict clothing identification AI.
+        - If the image contains clothing, respond with the name of the clothing in **three words or fewer**.
+        - If no clothing is detected, respond **only** with 'nil'.
+        - Do **not** provide additional text, explanations, or symbols.
         """
 
     init(vlmService: VLMServiceProtocol) {
