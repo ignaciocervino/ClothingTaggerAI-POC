@@ -25,10 +25,7 @@ final class MLXModelLoader {
     var loadState: ModelLoadState = .idle
     var running = false
 
-    /// Updated model based on VLMEvaluator
     let modelConfiguration = ModelRegistry.qwen2VL2BInstruct4Bit
-
-    /// Updated generation parameters from VLMEvaluator
     let generateParameters = MLXLMCommon.GenerateParameters(temperature: 0.6)
     let maxTokens = 800
 
@@ -175,6 +172,7 @@ final class MLXModelLoader {
                     "Inference completed in \(String(format: "%.2f", duration)) seconds"
                 )
 
+                logger.info("📌 Generated output: '\(result.output)'")
                 return result.output
 
             } catch is CancellationError {

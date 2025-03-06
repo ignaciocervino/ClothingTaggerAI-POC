@@ -75,10 +75,10 @@ struct HomeView: View {
             .onChange(of: photoPickerViewModel.selectedImage) { _, newImage in
                 guard let newImage else { return }
                 Task {
-                    let detectedClothing = await photoPickerViewModel.analyze(image: newImage)
-                    let newClothing = ClothingItem(uiImage: newImage, tag: detectedClothing ?? "Unknown")
+                    let detectedClothing = await photoPickerViewModel.tagClothing(in: newImage)
+                    let newClothing = ClothingItem(uiImage: newImage, tag: detectedClothing)
 
-                    DispatchQueue.main.async {
+                    await MainActor.run {
                         logger.info("Appended \(newClothing.tag) to the list.")
                         clothes.append(newClothing)
                     }

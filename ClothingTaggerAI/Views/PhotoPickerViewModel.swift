@@ -10,10 +10,9 @@ import PhotosUI
 import OSLog
 
 final class PhotoPickerViewModel: ObservableObject {
-    private let imageAnalyzer: ImageAnalysis
+    private let clothingAnalyzer: ClothingTaggerService
 
     var selectedImage: UIImage? = nil
-    var detectedClothing: String? = nil
     @Published var isProcessing: Bool = false
 
     var imageSelection: PhotosPickerItem? = nil {
@@ -24,7 +23,7 @@ final class PhotoPickerViewModel: ObservableObject {
 
     init(model: MLXModelLoader) {
         let vlmService = VLMService(modelLoader: model)
-        self.imageAnalyzer = ImageAnalysis(vlmService: vlmService)
+        self.clothingAnalyzer = ClothingTaggerService(vlmService: vlmService)
     }
 
     @MainActor
@@ -46,21 +45,13 @@ final class PhotoPickerViewModel: ObservableObject {
     }
 
     @MainActor
-    func analyze(image: UIImage) async -> String? {
+    func tagClothing(in image: UIImage) async -> String {
         isProcessing = true
-        detectedClothing = nil
 
-        let prompt = """
-        1. Check if the image contains a clothing item.
-        2. If yes, return the clothing type in at most 3 words.
-        3. If not, return 'nil'.
-        """
+        let tag = await clothingAnalyzer.tagClothing(in: image)
 
-        let result = await imageAnalyzer.analyze(image: image, prompt: prompt)
-
-        self.detectedClothing = result
         self.isProcessing = false
 
-        return result
+        return tag ?? "Undefined"
     }
 }

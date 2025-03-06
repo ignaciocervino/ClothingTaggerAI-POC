@@ -20,18 +20,6 @@ final class VLMService {
     init(modelLoader: MLXModelLoader) {
         self.modelLoader = modelLoader
     }
-
-    // MARK: - Helpers
-    private func processResponse(_ response: String) -> String? {
-        let lowercasedResponse = response.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if lowercasedResponse == "nil" {
-            return nil
-        }
-
-        let words = lowercasedResponse.split(separator: " ").prefix(3)
-        return words.joined(separator: " ")
-    }
 }
 
 extension VLMService: VLMServiceProtocol {
@@ -40,8 +28,10 @@ extension VLMService: VLMServiceProtocol {
         return try await modelLoader.analyze(image: image)
     }
 
-    @MainActor func reset() {
+    func reset() {
         logger.info("Resetting VLMService")
-        modelLoader.reset()
+        Task { @MainActor in
+            modelLoader.reset()
+        }
     }
 }
