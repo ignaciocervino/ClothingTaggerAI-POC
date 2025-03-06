@@ -22,10 +22,15 @@ let mockClothes: [ClothingItem] = [
 ]
 
 struct HomeView: View {
-    @State private var photoPickerViewModel = PhotoPickerViewModel()
+    @StateObject private var photoPickerViewModel: PhotoPickerViewModel
     @State private var clothes = mockClothes
     @State private var selectedItemId: UUID?
     @State private var showPopup = false
+
+    init() {
+        _photoPickerViewModel = StateObject(
+            wrappedValue: PhotoPickerViewModel(model: MLXModelLoader()))
+    }
 
     var body: some View {
         ZStack {
@@ -39,8 +44,7 @@ struct HomeView: View {
         NavigationStack {
             VStack {
                 if clothes.isEmpty {
-                    Text("No clothes added yet.")
-                        .foregroundColor(.gray)
+                    Text("No clothes added yet.").foregroundColor(.gray)
                 } else {
                     clothesGridView
                 }
@@ -49,15 +53,32 @@ struct HomeView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     PhotosPicker(selection: $photoPickerViewModel.imageSelection, matching: .images) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title)
+                        Image(systemName: "plus.circle.fill").font(.title)
                     }
                 }
             }
+            .overlay {
+                if photoPickerViewModel.isProcessing {
+                    VStack {
+                        ProgressView("Analyzing image...")
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .cornerRadius(10)
+                            .shadow(radius: 4)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.opacity(0.4))
+                }
+            }
             .onChange(of: photoPickerViewModel.selectedImage) { _, newImage in
-                if let newImage {
-                    let newClothing = ClothingItem(uiImage: newImage, tag: "NewImage")
-                    clothes.append(newClothing)
+                guard let newImage else { return }
+                Task {
+                    let detectedClothing = await photoPickerViewModel.analyze(image: newImage)
+                    let newClothing = ClothingItem(uiImage: newImage, tag: detectedClothing ?? "Unknown")
+
+                    DispatchQueue.main.async {
+                        clothes.append(newClothing)
+                    }
                 }
             }
         }

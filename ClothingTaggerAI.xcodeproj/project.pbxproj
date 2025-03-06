@@ -6,14 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E5C2271F2D76A118004CDA51 /* MLXVLM in Frameworks */ = {isa = PBXBuildFile; productRef = E5C2271E2D76A118004CDA51 /* MLXVLM */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		E5286E322D76141700C942F0 /* ClothingTaggerAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClothingTaggerAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5C227852D787FDA004CDA51 /* ClothingTaggerAI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClothingTaggerAI.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E5286E342D76141700C942F0 /* ClothTaggerAI */ = {
+		E5286E342D76141700C942F0 /* ClothingTaggerAI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ClothTaggerAI;
+			path = ClothingTaggerAI;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5C2271F2D76A118004CDA51 /* MLXVLM in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,7 +38,8 @@
 		E5286E292D76141700C942F0 = {
 			isa = PBXGroup;
 			children = (
-				E5286E342D76141700C942F0 /* ClothTaggerAI */,
+				E5C227852D787FDA004CDA51 /* ClothingTaggerAI.entitlements */,
+				E5286E342D76141700C942F0 /* ClothingTaggerAI */,
 				E5286E332D76141700C942F0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,10 +68,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E5286E342D76141700C942F0 /* ClothTaggerAI */,
+				E5286E342D76141700C942F0 /* ClothingTaggerAI */,
 			);
 			name = ClothingTaggerAI;
 			packageProductDependencies = (
+				E5C2271E2D76A118004CDA51 /* MLXVLM */,
 			);
 			productName = ClothTaggerAI;
 			productReference = E5286E322D76141700C942F0 /* ClothingTaggerAI.app */;
@@ -94,6 +102,9 @@
 			);
 			mainGroup = E5286E292D76141700C942F0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E5C227172D76A118004CDA51 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E5286E332D76141700C942F0 /* Products */;
 			projectDirPath = "";
@@ -249,9 +260,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ClothingTaggerAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"ClothTaggerAI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ClothingTaggerAI/Preview Content\"";
 				DEVELOPMENT_TEAM = CTRDNPB62J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -279,9 +291,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ClothingTaggerAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"ClothTaggerAI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ClothingTaggerAI/Preview Content\"";
 				DEVELOPMENT_TEAM = CTRDNPB62J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -326,6 +339,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E5C227172D76A118004CDA51 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift-examples/";
+			requirement = {
+				kind = revision;
+				revision = b23bbf0739c9919f48f9039da633c62419aabeac;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E5C2271E2D76A118004CDA51 /* MLXVLM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E5C227172D76A118004CDA51 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */;
+			productName = MLXVLM;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E5286E2A2D76141700C942F0 /* Project object */;
 }
