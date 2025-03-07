@@ -31,8 +31,8 @@ final class MLXModelLoader {
     var loadState: ModelLoadState = .idle
 
     let modelConfiguration = ModelRegistry.qwen2VL2BInstruct4Bit
-    let generateParameters = MLXLMCommon.GenerateParameters(temperature: 0.6)
-    let maxTokens = 800
+    let generateParameters = MLXLMCommon.GenerateParameters(temperature: 0.7)
+    let maxTokens = 400
 
     /// Load and return the model (ensures it's loaded before inference)
     func load() async throws -> ModelContainer {
@@ -89,16 +89,15 @@ final class MLXModelLoader {
 
                 let messages: [Message] = [
                     [
-                        "role": "system",
-                        "content": [["type": "text", "text": prompt]]
-                    ],
-                    [
                         "role": "user",
-                        "content": [["type": "image"]]
+                        "content": [
+                            ["type": "image"],
+                            ["type": "text", "text": prompt]
+                        ]
                     ]
                 ]
 
-                let userInput = UserInput(messages: messages, images: images, videos: [])
+                let userInput = UserInput(prompt: .messages(messages), images: images, processing: .init(resize: .init(width: 448, height: 448)))
                 let input = try await context.processor.prepare(input: userInput)
 
                 try Task.checkCancellation()

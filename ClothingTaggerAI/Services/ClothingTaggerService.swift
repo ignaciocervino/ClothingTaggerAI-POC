@@ -13,11 +13,12 @@ final class ClothingTaggerService {
 
     private let vlmService: VLMServiceProtocol
     let prompt = """
-        You are a strict clothing identification AI.
-        - If the image contains clothing, respond with the name of the clothing in **three words or fewer**.
-        - If no clothing is detected, respond **only** with 'null'.
-        - Do **not** provide additional text, explanations, or symbols.
-        """
+    You are an expert clothing classification AI.
+    - If the image contains clothing, describe it with **a short but detailed name** (e.g., "Green Cotton Pant", "Red Floral Dress").
+    - Your response must be **concise** (max 4 words) but include **color, pattern, or material** if visible.
+    - If no clothing is detected, respond **only** with 'null'.
+    - Do **not** add extra explanations, symbols, or text.
+    """
 
     init(vlmService: VLMServiceProtocol) {
         self.vlmService = vlmService
