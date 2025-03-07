@@ -30,9 +30,9 @@ final class MLXModelLoader {
     private var running = false
     var loadState: ModelLoadState = .idle
 
-    let modelConfiguration = ModelRegistry.qwen2VL2BInstruct4Bit
-    let generateParameters = MLXLMCommon.GenerateParameters(temperature: 0.7)
-    let maxTokens = 400
+    private let modelConfiguration = ModelRegistry.qwen2VL2BInstruct4Bit
+    private let generateParameters = MLXLMCommon.GenerateParameters(temperature: 0.5)
+    private let maxTokens = 20
 
     /// Load and return the model (ensures it's loaded before inference)
     func load() async throws -> ModelContainer {
@@ -40,7 +40,7 @@ final class MLXModelLoader {
         case .idle:
             logger.info("📦 Starting model load process...")
 
-            MLX.GPU.set(cacheLimit: 20 * 1024 * 1024)
+            MLX.GPU.set(cacheLimit: 4 * 1024 * 1024)
 
             let modelContainer = try await VLMModelFactory.shared.loadContainer(
                 configuration: modelConfiguration
@@ -70,11 +70,14 @@ final class MLXModelLoader {
         }
 
         running = true
-        defer { running = false }
+        defer {
+            running = false
+            MLX.GPU.clearCache()
+            logger.info("Clearing GPU cache")
+        }
 
         do {
             let modelContainer = try await load()
-
             try Task.checkCancellation()
 
             MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))

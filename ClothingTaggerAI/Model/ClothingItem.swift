@@ -9,6 +9,6 @@ import SwiftUI
 
 struct ClothingItem: Identifiable {
     let id = UUID()
-    let uiImage: UIImage?
+    let uiImage: UIImage
     var tag: String
 }

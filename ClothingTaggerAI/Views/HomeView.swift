@@ -55,7 +55,7 @@ struct HomeView: View {
                             .shadow(radius: 4)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.black.opacity(0.4))
+                    .background(Color.black.opacity(0.9))
                 }
             }
             .onChange(of: viewModel.selectedImage) { _, newImage in

@@ -12,12 +12,15 @@ final class ClothingTaggerService {
     private let logger = Logger.clothingTagger
 
     private let vlmService: VLMServiceProtocol
-    let prompt = """
-    You are an expert clothing classification AI.
-    - If the image contains clothing, describe it with **a short but detailed name** (e.g., "Green Cotton Pant", "Red Floral Dress").
-    - Your response must be **concise** (max 4 words) but include **color, pattern, or material** if visible.
-    - If no clothing is detected, respond **only** with 'null'.
-    - Do **not** add extra explanations, symbols, or text.
+    private let prompt = """
+    You are ClosetAI, a fashion-savvy image classifier.  
+    - Describe detected clothing uniquely in exactly four words (e.g., 'Denim Jacket Blue Wash').
+    - Use only letters, no commas, punctuation marks or special symbols.
+    - The first word **must** be the clothing type.
+    - The second word **must** describe fabric or pattern.
+    - The third word **must** describe the color.
+    - The fourth word **must** be another defining characteristic.
+    - If no clothing is detected, reply strictly 'null'.
     """
 
     init(vlmService: VLMServiceProtocol) {
