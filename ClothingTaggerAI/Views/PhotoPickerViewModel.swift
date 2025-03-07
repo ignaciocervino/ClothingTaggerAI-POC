@@ -74,9 +74,8 @@ final class PhotoPickerViewModel: ObservableObject {
             logger.warning("⚠️ Image does not contain a recognized clothing item.")
             clothingError = TagError(errorType: .warning, message: "The image does not appear to be a clothing item.")
         } else {
-            logger.info("✅ Successfully tagged clothing: \(clothingTag)")
             closetItems.append(ClothingItem(uiImage: image, tag: clothingTag))
-            logger.info("Appended \(clothingTag) to the list.")
+            logger.info("Adding \(clothingTag) to the closet.")
         }
     }
 

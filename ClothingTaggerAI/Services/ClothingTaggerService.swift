@@ -46,17 +46,3 @@ final class ClothingTaggerService {
         vlmService.reset()
     }
 }
-
-// MARK: - Helpers
-private extension ClothingTaggerService {
-    func processResponse(_ response: String) -> String? {
-        let lowercasedResponse = response.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if lowercasedResponse == "nil" {
-            return nil
-        }
-
-        let words = lowercasedResponse.split(separator: " ").prefix(3)
-        return words.joined(separator: " ")
-    }
-}

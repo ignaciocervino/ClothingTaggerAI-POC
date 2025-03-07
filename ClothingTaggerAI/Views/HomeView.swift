@@ -15,9 +15,9 @@ struct HomeView: View {
     @State private var showClothingItemPopup = false
     private let logger = Logger.viewEvents
 
-    init() {
+    init(model: MLXModelLoader) {
         _viewModel = StateObject(
-            wrappedValue: PhotoPickerViewModel(model: MLXModelLoader()))
+            wrappedValue: PhotoPickerViewModel(model: model))
     }
 
     var body: some View {
@@ -120,5 +120,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(model: MLXModelLoader())
 }

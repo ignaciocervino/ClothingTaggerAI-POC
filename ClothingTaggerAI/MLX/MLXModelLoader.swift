@@ -116,8 +116,7 @@ final class MLXModelLoader {
             }
 
             let duration = Date().timeIntervalSince(startTime)
-            logger.info("✅ Inference completed in \(String(format: "%.2f", duration)) seconds")
-
+            logger.info("✅ Inference completed in \(String(format: "%.2f", duration)) seconds. Model Output: \(String(describing: result.output))")
             return result.output
 
         } catch is CancellationError {
