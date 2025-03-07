@@ -5,7 +5,6 @@
 //  Created by Ignacio Cervino on 04/03/2025.
 //
 
-import Foundation
 import OSLog
 import SwiftUI
 
@@ -29,7 +28,6 @@ final class ClothingTaggerService {
         logger.debug("Image dimensions: \(image.size.width)x\(image.size.height)")
 
         do {
-            logger.debug("Sending image for VLM analysis")
             let analysisStartTime = Date()
 
             let result = try await vlmService.analyze(image: image, prompt: prompt)
@@ -39,7 +37,7 @@ final class ClothingTaggerService {
 
             return result
         } catch {
-            logger.error("Tagging failed with: \(error.localizedDescription)")
+            logger.error("Tagging failed with: \(error.localizedDescription), returning nil")
             return nil
         }
     }

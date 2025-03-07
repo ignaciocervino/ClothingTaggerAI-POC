@@ -5,11 +5,12 @@
 //  Created by Ignacio Cervino on 03/03/2025.
 //
 
+import OSLog
 import SwiftUI
 import PhotosUI
-import OSLog
 
 final class PhotoPickerViewModel: ObservableObject {
+    private let logger = Logger.photoProcessing
     private let clothingAnalyzer: ClothingTaggerService
 
     var selectedImage: UIImage? = nil
@@ -38,7 +39,7 @@ final class PhotoPickerViewModel: ObservableObject {
                 await MainActor.run { self.selectedImage = uiImage }
             }
         } catch {
-            Logger.photoProcessing.error("❌ Failed to load image: \(error.localizedDescription)")
+            logger.error("❌ Failed to load image: \(error.localizedDescription)")
         }
 
         isProcessing = false

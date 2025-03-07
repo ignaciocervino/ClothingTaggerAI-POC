@@ -5,8 +5,8 @@
 //  Created by Ignacio Cervino on 03/03/2025.
 //
 
-import SwiftUI
 import OSLog
+import SwiftUI
 
 protocol VLMServiceProtocol {
     func analyze(image: UIImage, prompt: String) async throws -> String
@@ -37,7 +37,6 @@ extension VLMService: VLMServiceProtocol {
     }
 
     func reset() {
-        logger.info("Resetting VLMService")
         Task { @MainActor in
             modelLoader.reset()
         }

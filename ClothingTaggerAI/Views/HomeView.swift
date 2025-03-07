@@ -5,9 +5,9 @@
 //  Created by Ignacio Cervino on 03/03/2025.
 //
 
+import OSLog
 import SwiftUI
 import PhotosUI
-import OSLog
 
 struct ClothingItem: Identifiable {
     let id = UUID()

@@ -5,10 +5,11 @@
 //  Created by Ignacio Cervino on 04/03/2025.
 //
 
-import SwiftUI
 import OSLog
+import SwiftUI
 
 struct OnboardingView: View {
+    private let logger = Logger.viewEvents
     @Environment(MLXModelLoader.self) var modelLoader
     @Environment(\.dismiss) private var dismiss
     @Binding var showOnboarding: Bool
@@ -46,7 +47,7 @@ struct OnboardingView: View {
                             .foregroundColor(.green)
                             .onAppear {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    Logger.viewEvents.info("Onboarding completed")
+                                    logger.info("Onboarding completed")
                                     showOnboarding = false
                                 }
                             }
@@ -64,7 +65,7 @@ struct OnboardingView: View {
             do {
                 _ = try await modelLoader.load()
             } catch {
-                Logger.modelLoader.error("Error loading model: \(error)")
+                logger.error("Error loading model: \(error)")
             }
         }
     }

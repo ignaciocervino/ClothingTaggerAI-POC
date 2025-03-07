@@ -5,12 +5,11 @@
 //  Created by Ignacio Cervino on 04/03/2025.
 //
 
-import Foundation
+import OSLog
 import MLX
 import MLXLMCommon
 import MLXVLM
 import MLXRandom
-import OSLog
 import SwiftUI
 
 enum MLXModelLoaderError: Error {
@@ -39,7 +38,7 @@ final class MLXModelLoader {
     func load() async throws -> ModelContainer {
         switch loadState {
         case .idle:
-            logger.info("🚀 Starting model load process...")
+            logger.info("📦 Starting model load process...")
 
             MLX.GPU.set(cacheLimit: 20 * 1024 * 1024)
 
@@ -52,17 +51,18 @@ final class MLXModelLoader {
             }
 
             loadState = .loaded(modelContainer)
-            logger.info("✅ Model loaded successfully with \(numParams) parameters")
+            logger.info("🎯 Model loaded successfully with \(numParams) parameters")
 
             return modelContainer
 
         case .loaded(let modelContainer):
+            logger.info("♻️ Model already loaded, returning existing instance")
             return modelContainer
         }
     }
 
     func analyze(image: CIImage, prompt: String) async throws -> String {
-        logger.info("Starting image analysis")
+        logger.info("🖼️ Starting image analysis")
 
         guard !running else {
             logger.warning("Analysis already in progress, skipping request")
@@ -73,12 +73,10 @@ final class MLXModelLoader {
         defer { running = false }
 
         do {
-            logger.debug("📥 Loading model for analysis")
             let modelContainer = try await load()
 
             try Task.checkCancellation()
 
-            logger.debug("🎲 Setting random seed for inference")
             MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))
 
             let startTime = Date()
@@ -100,7 +98,6 @@ final class MLXModelLoader {
                     ]
                 ]
 
-                logger.debug("🔍 Preparing user input for inference")
                 let userInput = UserInput(messages: messages, images: images, videos: [])
                 let input = try await context.processor.prepare(input: userInput)
 
