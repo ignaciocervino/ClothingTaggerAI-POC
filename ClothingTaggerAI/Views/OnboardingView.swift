@@ -47,7 +47,7 @@ struct OnboardingView: View {
                             .foregroundColor(.green)
                             .onAppear {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    logger.info("Onboarding completed")
+                                    logger.debug("Onboarding completed")
                                     showOnboarding = false
                                 }
                             }

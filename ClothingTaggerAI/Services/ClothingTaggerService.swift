@@ -15,7 +15,7 @@ final class ClothingTaggerService {
     let prompt = """
         You are a strict clothing identification AI.
         - If the image contains clothing, respond with the name of the clothing in **three words or fewer**.
-        - If no clothing is detected, respond **only** with 'nil'.
+        - If no clothing is detected, respond **only** with 'null'.
         - Do **not** provide additional text, explanations, or symbols.
         """
 

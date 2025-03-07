@@ -9,12 +9,24 @@ import OSLog
 import SwiftUI
 import PhotosUI
 
+struct TagError: Identifiable {
+    var id = UUID()
+    var errorType: ErrorType
+    var message: String
+
+    enum ErrorType: String {
+        case error = "Error"
+        case warning = "Warning"
+    }
+}
+
 final class PhotoPickerViewModel: ObservableObject {
     private let logger = Logger.photoProcessing
     private let clothingAnalyzer: ClothingTaggerService
 
     var selectedImage: UIImage? = nil
     @Published var isProcessing: Bool = false
+    @Published var clothingError: TagError? = nil
 
     var imageSelection: PhotosPickerItem? = nil {
         didSet {
@@ -40,19 +52,30 @@ final class PhotoPickerViewModel: ObservableObject {
             }
         } catch {
             logger.error("❌ Failed to load image: \(error.localizedDescription)")
+            clothingError = TagError(errorType: .error, message: "Failed to load image.")
         }
 
         isProcessing = false
     }
 
     @MainActor
-    func tagClothing(in image: UIImage) async -> String {
+    func tagClothing(in image: UIImage) async -> ClothingItem? {
         isProcessing = true
+        let clothingTag = await clothingAnalyzer.tagClothing(in: image)
+        isProcessing = false
 
-        let tag = await clothingAnalyzer.tagClothing(in: image)
+        guard let clothingTag else {
+            clothingError = TagError(errorType: .error, message: "Something went wrong while analyzing the image.")
+            return nil
+        }
 
-        self.isProcessing = false
+        if clothingTag.lowercased() == "null" {
+            logger.warning("⚠️ Image does not contain a recognized clothing item.")
+            clothingError = TagError(errorType: .warning, message: "The image does not appear to be a clothing item.")
+            return nil
+        }
 
-        return tag ?? "Undefined"
+        logger.info("✅ Successfully tagged clothing: \(clothingTag)")
+        return ClothingItem(uiImage: image, tag: clothingTag)
     }
 }

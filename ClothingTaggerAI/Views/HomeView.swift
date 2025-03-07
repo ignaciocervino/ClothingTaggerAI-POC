@@ -26,7 +26,7 @@ struct HomeView: View {
     @StateObject private var photoPickerViewModel: PhotoPickerViewModel
     @State private var clothes = mockClothes
     @State private var selectedItemId: UUID?
-    @State private var showPopup = false
+    @State private var showClothingItemPopup = false
     private let logger = Logger.viewEvents
 
     init() {
@@ -75,14 +75,18 @@ struct HomeView: View {
             .onChange(of: photoPickerViewModel.selectedImage) { _, newImage in
                 guard let newImage else { return }
                 Task {
-                    let detectedClothing = await photoPickerViewModel.tagClothing(in: newImage)
-                    let newClothing = ClothingItem(uiImage: newImage, tag: detectedClothing)
+                    let newClothingItem = await photoPickerViewModel.tagClothing(in: newImage)
 
                     await MainActor.run {
-                        logger.info("Appended \(newClothing.tag) to the list.")
-                        clothes.append(newClothing)
+                        if let newClothingItem {
+                            logger.info("Appended \(newClothingItem.tag) to the list.")
+                            clothes.append(newClothingItem)
+                        }
                     }
                 }
+            }
+            .alert(item: $photoPickerViewModel.clothingError) { error in
+                Alert(title: Text(error.errorType.rawValue.capitalized), message: Text(error.message), dismissButton: .default(Text("OK")))
             }
         }
     }
@@ -94,7 +98,7 @@ struct HomeView: View {
                     ClothingItemView(item: item)
                         .onTapGesture {
                             selectedItemId = item.id
-                            showPopup = true
+                            showClothingItemPopup = true
                         }
                 }
             }
@@ -103,16 +107,16 @@ struct HomeView: View {
     }
 
     private var backgroundOverlay: some View {
-        Color.black.opacity(showPopup ? 0.9 : 0)
+        Color.black.opacity(showClothingItemPopup ? 0.9 : 0)
             .edgesIgnoringSafeArea(.all)
-            .onTapGesture { showPopup = false }
-            .animation(.easeInOut, value: showPopup)
-            .allowsHitTesting(showPopup)
+            .onTapGesture { showClothingItemPopup = false }
+            .animation(.easeInOut, value: showClothingItemPopup)
+            .allowsHitTesting(showClothingItemPopup)
     }
 
     private var popupView: some View {
         Group {
-            if showPopup, let selectedId = selectedItemId,
+            if showClothingItemPopup, let selectedId = selectedItemId,
                let selectedItem = clothes.first(where: { $0.id == selectedId }) {
                 ClothingTagEditorView(
                     clothingItem: Binding(
@@ -127,12 +131,12 @@ struct HomeView: View {
                         logger.info("Removing clothing item with id \(selectedId)")
                         clothes.removeAll { $0.id == selectedId }
                         selectedItemId = nil
-                        showPopup = false
+                        showClothingItemPopup = false
                     }
                 )
-                .opacity(showPopup ? 1 : 0)
-                .scaleEffect(showPopup ? 1 : 0.8)
-                .allowsHitTesting(showPopup)
+                .opacity(showClothingItemPopup ? 1 : 0)
+                .scaleEffect(showClothingItemPopup ? 1 : 0.8)
+                .allowsHitTesting(showClothingItemPopup)
             }
         }
     }
