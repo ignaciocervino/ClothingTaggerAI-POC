@@ -9,28 +9,14 @@ import OSLog
 import SwiftUI
 import PhotosUI
 
-struct ClothingItem: Identifiable {
-    let id = UUID()
-    let uiImage: UIImage?
-    var tag: String
-}
-
-let mockClothes: [ClothingItem] = [
-    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
-    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
-    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt"),
-    ClothingItem(uiImage: .tshirtAddIcon, tag: "Blue Shirt")
-]
-
 struct HomeView: View {
-    @StateObject private var photoPickerViewModel: PhotoPickerViewModel
-    @State private var clothes = mockClothes
-    @State private var selectedItemId: UUID?
+    @StateObject private var viewModel: PhotoPickerViewModel
+    @State private var selectedItem: ClothingItem?
     @State private var showClothingItemPopup = false
     private let logger = Logger.viewEvents
 
     init() {
-        _photoPickerViewModel = StateObject(
+        _viewModel = StateObject(
             wrappedValue: PhotoPickerViewModel(model: MLXModelLoader()))
     }
 
@@ -45,7 +31,7 @@ struct HomeView: View {
     private var mainContentView: some View {
         NavigationStack {
             VStack {
-                if clothes.isEmpty {
+                if $viewModel.closetItems.isEmpty {
                     Text("No clothes added yet.").foregroundColor(.gray)
                 } else {
                     clothesGridView
@@ -54,13 +40,13 @@ struct HomeView: View {
             .navigationTitle("My Closet")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    PhotosPicker(selection: $photoPickerViewModel.imageSelection, matching: .images) {
+                    PhotosPicker(selection: $viewModel.imageSelection, matching: .images) {
                         Image(systemName: "plus.circle.fill").font(.title)
                     }
                 }
             }
             .overlay {
-                if photoPickerViewModel.isProcessing {
+                if viewModel.isProcessing {
                     VStack {
                         ProgressView("Analyzing image...")
                             .padding()
@@ -72,20 +58,13 @@ struct HomeView: View {
                     .background(Color.black.opacity(0.4))
                 }
             }
-            .onChange(of: photoPickerViewModel.selectedImage) { _, newImage in
+            .onChange(of: viewModel.selectedImage) { _, newImage in
                 guard let newImage else { return }
                 Task {
-                    let newClothingItem = await photoPickerViewModel.tagClothing(in: newImage)
-
-                    await MainActor.run {
-                        if let newClothingItem {
-                            logger.info("Appended \(newClothingItem.tag) to the list.")
-                            clothes.append(newClothingItem)
-                        }
-                    }
+                    await viewModel.tagClothing(in: newImage)
                 }
             }
-            .alert(item: $photoPickerViewModel.clothingError) { error in
+            .alert(item: $viewModel.clothingError) { error in
                 Alert(title: Text(error.errorType.rawValue.capitalized), message: Text(error.message), dismissButton: .default(Text("OK")))
             }
         }
@@ -94,10 +73,10 @@ struct HomeView: View {
     private var clothesGridView: some View {
         ScrollView {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))], spacing: 16) {
-                ForEach(clothes) { item in
+                ForEach(viewModel.closetItems) { item in
                     ClothingItemView(item: item)
                         .onTapGesture {
-                            selectedItemId = item.id
+                            selectedItem = item
                             showClothingItemPopup = true
                         }
                 }
@@ -116,21 +95,19 @@ struct HomeView: View {
 
     private var popupView: some View {
         Group {
-            if showClothingItemPopup, let selectedId = selectedItemId,
-               let selectedItem = clothes.first(where: { $0.id == selectedId }) {
+            if showClothingItemPopup, let selectedItem {
                 ClothingTagEditorView(
                     clothingItem: Binding(
                         get: { selectedItem },
                         set: { newValue in
-                            if let index = clothes.firstIndex(where: { $0.id == selectedId }) {
-                                clothes[index] = newValue
+                            if let index = viewModel.closetItems.firstIndex(where: { $0.id == selectedItem.id }) {
+                                viewModel.closetItems[index] = newValue
                             }
                         }
                     ),
                     onDelete: {
-                        logger.info("Removing clothing item with id \(selectedId)")
-                        clothes.removeAll { $0.id == selectedId }
-                        selectedItemId = nil
+                        viewModel.removeClothingItem(item: selectedItem)
+                        self.selectedItem = nil
                         showClothingItemPopup = false
                     }
                 )

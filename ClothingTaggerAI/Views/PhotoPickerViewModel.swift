@@ -21,10 +21,11 @@ struct TagError: Identifiable {
 }
 
 final class PhotoPickerViewModel: ObservableObject {
-    private let logger = Logger.photoProcessing
+    private let logger = Logger.viewEvents
     private let clothingAnalyzer: ClothingTaggerService
 
     var selectedImage: UIImage? = nil
+    @Published var closetItems: [ClothingItem] = []
     @Published var isProcessing: Bool = false
     @Published var clothingError: TagError? = nil
 
@@ -59,23 +60,27 @@ final class PhotoPickerViewModel: ObservableObject {
     }
 
     @MainActor
-    func tagClothing(in image: UIImage) async -> ClothingItem? {
+    func tagClothing(in image: UIImage) async {
         isProcessing = true
         let clothingTag = await clothingAnalyzer.tagClothing(in: image)
         isProcessing = false
 
         guard let clothingTag else {
             clothingError = TagError(errorType: .error, message: "Something went wrong while analyzing the image.")
-            return nil
+            return
         }
 
         if clothingTag.lowercased() == "null" {
             logger.warning("⚠️ Image does not contain a recognized clothing item.")
             clothingError = TagError(errorType: .warning, message: "The image does not appear to be a clothing item.")
-            return nil
+        } else {
+            logger.info("✅ Successfully tagged clothing: \(clothingTag)")
+            closetItems.append(ClothingItem(uiImage: image, tag: clothingTag))
+            logger.info("Appended \(clothingTag) to the list.")
         }
+    }
 
-        logger.info("✅ Successfully tagged clothing: \(clothingTag)")
-        return ClothingItem(uiImage: image, tag: clothingTag)
+    func removeClothingItem(item: ClothingItem) {
+        closetItems.removeAll { $0.id == item.id }
     }
 }
