@@ -13,6 +13,12 @@ import MLXRandom
 import OSLog
 import SwiftUI
 
+enum MLXModelLoaderError: Error {
+    case analysisAlreadyInProgress
+    case failedWith(description: String)
+    case taskCancelled
+}
+
 @Observable
 @MainActor
 final class MLXModelLoader {
@@ -60,7 +66,7 @@ final class MLXModelLoader {
 
         guard !running else {
             logger.warning("Analysis already in progress, skipping request")
-            return ""
+            throw MLXModelLoaderError.analysisAlreadyInProgress
         }
 
         running = true
@@ -119,10 +125,10 @@ final class MLXModelLoader {
 
         } catch is CancellationError {
             logger.info("⚠️ Analysis was cancelled")
-            return ""
+            throw MLXModelLoaderError.taskCancelled
         } catch {
             logger.error("❌ Analysis failed: \(error.localizedDescription)")
-            throw error
+            throw MLXModelLoaderError.failedWith(description: error.localizedDescription)
         }
     }
 
